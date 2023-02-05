@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="">
+    <title>Enigma-Simulation</title>
+    <style>
+        textarea {
+            background-color: rgb(55, 59, 69);
+            color: white;
+            margin: 15px;
+            margin-bottom: 5px;
+            padding: 7px;
+            resize: none;
+            border-radius: 5px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 115%;
+            text-transform: uppercase;
+        }
+    </style>
+    <script>
+
+
+    </script>
+</head>
+
+<body style="text-align: center; font-family: 'Roboto', sans-serif; color: white; background-color: rgb(35, 39, 49);">
+    <h1 style="margin: 10px; font-size: 250%;">Unfiy your music!</h1>
+    <h1 style="margin: 50px; font-size: 100%;">Across all your favorite platforms!</h1>
+    <h1 style="margin: 10px; font-size: 300%;">Thats your last streamed song:</h1>
+
+
+    <img id="thumbnail"
+        style="margin: 30px; width: 400px; height: 400px; object-fit: cover; border:5px; border-radius: 15px;">
+
+    <h1 style="margin: 10px; font-size: 300%;" id="songName"></h1>
+    <h1 style="margin: 20px; font-size: 200%;" id="artistName"></h1>
+
+    <script type="text/javascript">
+        var misc;
+        main();
+        async function main() {
+            misc = await getMisc();
+            patchContent();
+        }
+        async function getMisc() {
+            return new Promise((obj) => {
+                fetch('./misc.json')
+                    .then(res => res.json())
+                    .then(data => {
+                        return obj(data)
+                    })
+            })
+        }
+
+        function patchContent() {
+            document.getElementById("songName").innerHTML = misc.lastStreamName;
+            document.getElementById("artistName").innerHTML = misc.lastStreamArtist;
+            document.getElementById("thumbnail").src = misc.lastStreamThumbnailURL;
+        }
+    </script>
+</body>
+
+
+
+</html>

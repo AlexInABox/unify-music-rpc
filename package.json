@@ -1,0 +1,36 @@
+{
+  "name": "unify-music-rpc",
+  "version": "0.0.1",
+  "description": "A project to unify all music streaming providers into a single Discord Rich Presence. Seamless integration with popular services like Spotify, YouTube Music & more. Enhance your Discord experience by showcasing current song on your profile. Includes source code & documentation.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexInABox/unify-music-rpc.git"
+  },
+  "keywords": [
+    "music",
+    "discord",
+    "rpc",
+    "spotify",
+    "apple",
+    "music",
+    "yt",
+    "music",
+    "youtube",
+    "tune.fm"
+  ],
+  "author": "alexinabox",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlexInABox/unify-music-rpc/issues"
+  },
+  "homepage": "https://github.com/AlexInABox/unify-music-rpc#readme",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "fs": "^0.0.1-security",
+    "youtube-music-api": "^1.0.6"
+  }
+}
