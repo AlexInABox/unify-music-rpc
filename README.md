@@ -13,7 +13,7 @@ Here's what you need to get started with this project:
 Follow these steps to install and set up the project:
 1. Clone the repository to your local machine using the following command:
 ```sh
-$ git clone https://github.com/<username>/<repository>.git
+git clone https://github.com/<username>/<repository>.git
 ```
 2. Install the required dependencies listed in the `requirements.txt` file.
 3. Configure the project with your Discord and music streaming credentials.
