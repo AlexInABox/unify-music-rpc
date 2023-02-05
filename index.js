@@ -14,9 +14,7 @@ var misc = require('./misc.json')
 var cookie = "YSC=iyo3H_kWO18; CONSENT=PENDING+063; SOCS=CAISNQgREitib3FfaWRlbnRpdHlmcm9udGVuZHVpc2VydmVyXzIwMjMwMTMxLjA2X3AwGgJkZSACGgYIgOP7ngY; DEVICE_INFO=ChxOekU1TmpZMk5qazNNalV6TWpneE1EVXhNdz09EPvk/p4GGPvk/p4G; VISITOR_INFO1_LIVE=-a1gi9a-lj4; SID=SwgeyLzkoavZ7eldSnqpQceqsUCS0tK4ru8W9Fhbdo8RC6vq2q0TlHy7TIdk8AigJ5KF8Q.; __Secure-1PSID=SwgeyLzkoavZ7eldSnqpQceqsUCS0tK4ru8W9Fhbdo8RC6vqxo4W8nTzMuIWGXqo8f0hhQ.; __Secure-3PSID=SwgeyLzkoavZ7eldSnqpQceqsUCS0tK4ru8W9Fhbdo8RC6vqPYhK_PHlJiOckTdDhkc2Sg.; HSID=ACUqtiMrA3pBtsOZk; SSID=AZJNdWH86H5flUJmF; APISID=Ue1ZD4fMQHV6ItlC/A0Q8e_wMIhM0H7Ci3; SAPISID=V-lhk2pfMRx1Zoql/As8FE8fW34X1PWDec; __Secure-1PAPISID=V-lhk2pfMRx1Zoql/As8FE8fW34X1PWDec; __Secure-3PAPISID=V-lhk2pfMRx1Zoql/As8FE8fW34X1PWDec; LOGIN_INFO=AFmmF2swRQIhAIni6aQg4RpwdyHUXJu3gfnRYEIrJTOQQ2atBHC-pG6uAiBLmMIPj7XYh_F_DlmehhUlUu7H6TLeVYRYkPODBocssQ:QUQ3MjNmekJHcGZaWjZrSDdaVFBtdFJSc3RpSTg2TzVyeWtZdXMwWnhHVGlHUmtnLVZwWnRrVWotTlN0RUJwLS1XMkRjSmV0Z0xuSkZOREl2Z01IcmNpUTNBdzlXUkxSWGpja2s0NUVQYlBDTUhRRjFTcHZZbld2SFdIMWkwTHBnTU9jdkVMRDVLcEpVVEMtQmNKWk9NcDcxTmFudHdlYnRn; PREF=f6=40000080&tz=Europe.Berlin&f7=100; SIDCC=AFvIBn8uku-KanWPArtyJMQvM33jClrWJcFJHF9vvzR4n6YlmAKqnPywGJGyc7FxFSlkLjFELw; __Secure-1PSIDCC=AFvIBn_jkSNOQFqEVdVQBAiD1xtlTKsLYXKSZcFd12O4_dkLIZJBVjwHvVJPTPXfqkf9SJSIuQ; __Secure-3PSIDCC=AFvIBn8iRqDE6S8itieExwd6GXqTzhEdieyi5kLkMreKQcK9DZbHzDnPJWGV2GAG_cy_vF7M"
 //Print out the last song from you history
 
-main().catch(console.error);
-
-async function main() {
+async function runScript() {
     var lastSong = await getLatestYTSong()
 
     lastStreamName = getLatestYTName(lastSong)
@@ -37,7 +35,12 @@ async function main() {
         patchMisc()
         console.log("A new song was played and saved")
     }
+
+    console.log("Waiting for next check")
 }
+
+setInterval(runScript, 30000);
+runScript().catch(console.error);
 
 async function getLatestYTSong() {
     return new Promise((res) => {

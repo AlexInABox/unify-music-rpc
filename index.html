@@ -3,10 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=390px">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/x-icon" href="">
-    <title>Enigma-Simulation</title>
+    <link rel="icon" type="image/x-icon" href="./favicon.png">
+    <title>Unify your music</title>
     <style>
         textarea {
             background-color: rgb(55, 59, 69);
@@ -20,24 +21,33 @@
             font-size: 115%;
             text-transform: uppercase;
         }
+
+        .center-fit {
+            max-width: 90%;
+            max-height: 100vh;
+            margin: 30px;
+        }
     </style>
-    <script>
-
-
+    <script type="module">
+        import { getBlurHashAverageColor } from 'fast-blurhash';
+        const rgbAverageColor = getBlurHashAverageColor('LEHV6nWB2yk8pyo0adR*.7kCMdnj');
+        document.body.style.backgroundColor = `rgb(${rgbAverageColor.join(',')})`;
     </script>
 </head>
 
 <body style="text-align: center; font-family: 'Roboto', sans-serif; color: white; background-color: rgb(35, 39, 49);">
-    <h1 style="margin: 10px; font-size: 250%;">Unfiy your music!</h1>
-    <h1 style="margin: 50px; font-size: 100%;">Across all your favorite platforms!</h1>
-    <h1 style="margin: 10px; font-size: 300%;">Thats your last streamed song:</h1>
+
+    <h1 style="margin: 10px; font-size: 10vw;">Unify your music!</h1>
+    <h1 style="margin: 10px; font-size: 4vw;">Across all your favorite platforms!</h1>
+    <h1 style="margin: 50px;"></h1>
+    <h1 style="margin: 20px; font-size: 8vw;">This is your last streamed song:</h1>
 
 
-    <img id="thumbnail"
-        style="margin: 30px; width: 400px; height: 400px; object-fit: cover; border:5px; border-radius: 15px;">
+    <img class="center-fit" id="thumbnail"
+        style="margin: 30px;  width: 80%; height: 90%; max-width: 400px; max-height: 400px; aspect-ratio: 1; object-fit: cover; border:5px; border-radius: 15px;">
 
-    <h1 style="margin: 10px; font-size: 300%;" id="songName"></h1>
-    <h1 style="margin: 20px; font-size: 200%;" id="artistName"></h1>
+    <h1 style="margin: 10px; font-size: 150%;" id="songName"></h1>
+    <h1 style="margin: 20px; font-size: 100%;" id="artistName"></h1>
 
     <script type="text/javascript">
         var misc;
