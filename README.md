@@ -1,4 +1,4 @@
-# Unify Music Streaming Providers with Discord Rich Presence
+# Unify Music Streaming Providers with Discord Rich Presence :sparkles: :owlbert-reading:
 
 ## Introduction
 This project aims to unify all music streaming providers into a single Discord Rich Presence, allowing you to display the current song you're listening to directly on your Discord profile. With seamless integration with popular music streaming providers such as Spotify, YouTube Music, and more, you can enhance your Discord experience and show off your musical tastes to your friends.
