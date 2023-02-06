@@ -3,7 +3,6 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=390px">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="./favicon.png">
@@ -21,57 +20,130 @@
             font-size: 115%;
             text-transform: uppercase;
         }
+    </style>
+    <style>
+        div.card {
 
-        .center-fit {
-            max-width: 90%;
-            max-height: 100vh;
-            margin: 30px;
+            width: 80%;
+            height: 80%;
+            max-width: 400px;
+            max-height: 400px;
+            margin: auto;
+            scale: auto;
+            overflow: visible;
+            aspect-ratio: 1;
+            margin-top: 0px;
+            border: 5px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+        }
+
+        div.container {
+            text-align: center;
+            height: fit-content;
+            max-height: 30%;
+            font-size: auto;
+            padding: 10px;
         }
     </style>
-    <script type="module">
-        import { getBlurHashAverageColor } from 'fast-blurhash';
-        const rgbAverageColor = getBlurHashAverageColor('LEHV6nWB2yk8pyo0adR*.7kCMdnj');
-        document.body.style.backgroundColor = `rgb(${rgbAverageColor.join(',')})`;
-    </script>
 </head>
 
 <body style="text-align: center; font-family: 'Roboto', sans-serif; color: white; background-color: rgb(35, 39, 49);">
-
-    <h1 style="margin: 10px; font-size: 10vw;">Unify your music!</h1>
-    <h1 style="margin: 10px; font-size: 4vw;">Across all your favorite platforms!</h1>
-    <h1 style="margin: 50px;"></h1>
-    <h1 style="margin: 20px; font-size: 8vw;">This is your last streamed song:</h1>
+    <div style="height: 100%;">
+        <script src="blurhash_pure_js_port.min.js"></script>
 
 
-    <img class="center-fit" id="thumbnail"
-        style="margin: 30px;  width: 80%; height: 90%; max-width: 400px; max-height: 400px; aspect-ratio: 1; object-fit: cover; border:5px; border-radius: 15px;">
 
-    <h1 style="margin: 10px; font-size: 150%;" id="songName"></h1>
-    <h1 style="margin: 20px; font-size: 100%;" id="artistName"></h1>
 
-    <script type="text/javascript">
-        var misc;
-        main();
-        async function main() {
-            misc = await getMisc();
-            patchContent();
-        }
-        async function getMisc() {
-            return new Promise((obj) => {
-                fetch('./misc.json')
-                    .then(res => res.json())
-                    .then(data => {
-                        return obj(data)
+
+
+
+        <h1 style="margin: 20px; margin-bottom: 50px; font-size: 7vw;">This is your last streamed song:</h1>
+
+        <div class="card">
+            <img id="thumbnail"
+                style="width: 100%; height: 100%; max-width: 400px; max-height: 400px; aspect-ratio: 1; object-fit: cover; border:5px; border-radius: 15px;">
+            <div class="container">
+                <h1 style="margin: 10px; font-size: 150%;" id="songName"></h1>
+                <h1 style="margin: 20px; font-size: 120%;" id="artistName"></h1>
+            </div>
+        </div>
+        <script>
+
+
+
+            const img = document.getElementById("thumbnail");
+            img.crossOrigin = "Anonymous";
+            //changing the crossOrigin to "Anonymous" will not work because the image is not on the same server and therefore the CORS policy will not allow it
+            //this can be fixed by using a proxy server
+            //this is the link to the proxy server: https://cors-anywhere.herokuapp.com/
+            //this is the link to the image: https://i.scdn.co/image/ab67616d0000b273c0e2b2b2b2b2b2b2b2b2b2b2
+            //this is the link to the image with the proxy server: https://cors-anywhere.herokuapp.com/https://i.scdn.co/image/ab67616d0000b273c0e2b2b2b2b2b2b2b2b2b2b2
+
+
+            img.onload = () => {
+
+                const imgData = blurhash.getImageData(img);
+
+                blurhash
+                    .encodePromise(imgData, img.width, img.height, 4, 4)
+                    .then(hash => {
+                        return blurhash.decodePromise(
+                            hash,
+                            img.width,
+                            img.height
+                        );
                     })
-            })
-        }
+                    .then(blurhashImgData => {
+                        // as canvas element
+                        const canvas = blurhash.drawImageDataOnNewCanvas(
+                            blurhashImgData,
+                            img.width,
+                            img.height
+                        );
+                        //draw this canvas on the background of the whole page
+                        document.body.style.backgroundImage = `url(${canvas.toDataURL()})`;
+                        document.body.style.backgroundSize = "cover";
+                        document.body.style.backgroundPosition = "center";
+                        document.body.style.backgroundAttachment = "fixed";
 
-        function patchContent() {
-            document.getElementById("songName").innerHTML = misc.lastStreamName;
-            document.getElementById("artistName").innerHTML = misc.lastStreamArtist;
-            document.getElementById("thumbnail").src = misc.lastStreamThumbnailURL;
-        }
-    </script>
+
+
+
+
+                    })
+            };
+        //make the image source the url of the thumbnail
+
+        </script>
+
+
+
+        <script type="text/javascript">
+            var misc;
+            main();
+            async function main() {
+                misc = await getMisc();
+                patchContent();
+            }
+            async function getMisc() {
+                return new Promise((obj) => {
+                    fetch('./misc.json')
+                        .then(res => res.json())
+                        .then(data => {
+                            return obj(data)
+                        })
+                })
+            }
+
+            function patchContent() {
+                document.getElementById("songName").innerHTML = misc.lastStreamName;
+                document.getElementById("artistName").innerHTML = misc.lastStreamArtist;
+                document.getElementById("thumbnail").src = "http://alexinabox.de:6969/" + misc.lastStreamThumbnailURL;
+            }
+        </script>
+    </div>
 </body>
 
 
