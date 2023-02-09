@@ -32,6 +32,7 @@
     "crypto": "^1.0.1",
     "fast-blurhash": "^1.1.2",
     "fs": "^0.0.1-security",
-    "youtube-music-api": "^1.0.6"
+    "youtube-music-api": "^1.0.6",
+    "youtubei.js": "^2.9.0"
   }
 }

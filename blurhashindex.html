@@ -128,15 +128,17 @@
 
         <script type="text/javascript">
             var misc;
-            setInterval(main(), 30000);
+            main();
+            setInterval(function () { main() }, 30000);
 
             async function main() {
+
+                console.log("Running script...");
                 misc = await getMisc();
                 patchContent();
+                console.log("Content successfully patched!");
 
-
-                console.log("30 seconds passed, restarting script");
-
+                console.log("Waiting for 30 seconds...");
             }
             async function getMisc() {
                 return new Promise((obj) => {
@@ -152,7 +154,6 @@
                 document.getElementById("songName").innerHTML = misc.lastStreamName;
                 document.getElementById("artistName").innerHTML = misc.lastStreamArtist;
                 document.getElementById("thumbnail").src = "https://alexinabox.de:6968/" + misc.lastStreamThumbnailURL;
-
             }
         </script>
     </div>
