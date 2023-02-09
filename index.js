@@ -77,6 +77,7 @@ async function runScript() {
 
 
     var lastVideo = await getLatestYTVideo();
+    console.log(lastVideo)
 
     if (lastVideo.videoURL == misc.lastYTStreamURL) {
         console.log("No new video played")
@@ -85,6 +86,7 @@ async function runScript() {
         misc.lastYTStreamName = lastVideo.videoName
         misc.lastYTStreamURL = lastVideo.videoURL
         misc.lastYTStreamThumbnailURL = lastVideo.videoThumbnailURL
+        misc.lastYTStreamChannelName = lastVideo.videoChannel
         patchMisc()
         console.log("A new video was played and saved")
     }
@@ -145,6 +147,7 @@ async function getLatestYTVideo() {
     var videoName;
     var videoURL;
     var videoThumbnailURL;
+    var videoChannel;
 
 
     return new Promise((res) => {
@@ -153,13 +156,15 @@ async function getLatestYTVideo() {
             videoName = ythistory.sections[0].contents[1].title.runs[0].text
             videoURL = "https://www.youtube.com/watch?v=" + ythistory.sections[0].contents[1].id
             videoThumbnailURL = ythistory.sections[0].contents[1].thumbnails[0].url
-            return res({ videoName, videoURL, videoThumbnailURL })
+            videoChannel = ythistory.sections[0].contents[1].author.name
+            return res({ videoName, videoURL, videoThumbnailURL, videoChannel })
         }
         else {
             videoName = ythistory.sections[0].contents[0].title.runs[0].text
             videoURL = "https://www.youtube.com/watch?v=" + ythistory.sections[0].contents[0].id
             videoThumbnailURL = ythistory.sections[0].contents[0].thumbnails[0].url
-            return res({ videoName, videoURL, videoThumbnailURL })
+            videoChannel = ythistory.sections[0].contents[0].author.name
+            return res({ videoName, videoURL, videoThumbnailURL, videoChannel })
         }
     })
 }
