@@ -35,7 +35,7 @@ async function runScript() {
 
     // 'update-credentials' is fired when the access token expires, if you do not save the updated credentials any subsequent request will fail 
     youtube.session.on('update-credentials', ({ credentials }) => {
-        console.log('Credentials updated:', credentials);
+        console.log('Credentials updated/refreshed:', credentials);
     });
 
     await youtube.session.signIn();
