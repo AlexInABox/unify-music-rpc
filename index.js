@@ -44,39 +44,35 @@ async function runScript() {
 
     await youtube.session.oauth.cacheCredentials();
 
+    //GEt the latest YTMusic Song
+    try {
+        var lastSong = await getLatestYTMusicSong()
+
+        lastStreamName = getLatestYTMusicName(lastSong)
+        lastStreamArtist = getLatestYTMusicArtist(lastSong)
 
 
+        if (lastStreamName == misc.lastStreamName && lastStreamArtist == misc.lastStreamArtist) {
+            console.log("No new song played")
 
+        }
+        else {
 
+            misc.lastStreamName = lastStreamName
+            misc.lastStreamArtist = lastStreamArtist
+            misc.lastStreamUrl = getLatestYTMusicURL(lastSong)
+            misc.lastStreamThumbnailURL = getLatestYTMusicThumbnail(lastSong)
+            misc.lastStreamTime = Date.now()
+            patchMisc()
+            console.log("A new song was played and saved")
+        }
 
-
-
-
-
-
-
-
-    var lastSong = await getLatestYTMusicSong()
-
-    lastStreamName = getLatestYTMusicName(lastSong)
-    lastStreamArtist = getLatestYTMusicArtist(lastSong)
-
-
-    if (lastStreamName == misc.lastStreamName && lastStreamArtist == misc.lastStreamArtist) {
-        console.log("No new song played")
-
-    }
-    else {
-
-        misc.lastStreamName = lastStreamName
-        misc.lastStreamArtist = lastStreamArtist
-        misc.lastStreamUrl = getLatestYTMusicURL(lastSong)
-        misc.lastStreamThumbnailURL = getLatestYTMusicThumbnail(lastSong)
-        misc.lastStreamTime = Date.now()
-        patchMisc()
-        console.log("A new song was played and saved")
+    } catch (error) {
+        console.log("Something went wrong trying to fetch the latest YTMusic Song. You prb havent listened to any song today!")
+        console.log(error)
     }
 
+    //Get the latest YouTube Video
     try {
         var lastVideo = await getLatestYTVideo();
         console.log(lastVideo)
@@ -106,45 +102,34 @@ runScript().catch(console.error);
 
 //YTMusic API functions
 async function getLatestYTMusicSong() {
-    return new Promise((res) => {
-        ytm.initalize(cookie).then(() => {
-            ytm.getUserHistory().then((history) => {
-                //console.log(history.content[0])
-                return res(history.content[0])
-            })
-        })
-    }
-    )
+    return await youtube.actions.execute('/browse', { client: 'YTMUSIC', browseId: 'FEmusic_history', parse: true });
+
 }
 
-function getLatestYTMusicName(song) {
-    return song.name
+function getLatestYTMusicName(history) {
+    return history.contents_memo.get("MusicResponsiveListItem")[0].title
 }
 
-function getLatestYTMusicArtist(song) {
-    var artist;
-    if (Array.isArray(song.author)) {
-        //add all artists to the artist string divided by an '&'
-        for (var i = 0; i < song.author.length; i++) {
-            if (i == 0) {
-                artist = song.author[i].name
-            } else {
-                artist = artist + " & " + song.author[i].name
-            }
+function getLatestYTMusicArtist(history) {
+    var artists;
+    var length = history.contents_memo.get("MusicResponsiveListItem")[0].artists.length
+    for (let i = 0; i < length; i++) {
+        if (i == 0) {
+            artists = history.contents_memo.get("MusicResponsiveListItem")[0].artists[i].name
+        }
+        else {
+            artists = artists + " & " + history.contents_memo.get("MusicResponsiveListItem")[0].artists[i].name
         }
     }
-    else {
-        artist = song.author.name
-    }
-    return artist
+    return artists;
 }
 
-function getLatestYTMusicURL(song) {
-    return "https://music.youtube.com/watch?v=" + song.videoId
+function getLatestYTMusicURL(history) {
+    return "https://music.youtube.com/watch?v=" + history.contents_memo.get("MusicResponsiveListItem")[0].id
 }
 
-function getLatestYTMusicThumbnail(song) {
-    return "https://img.youtube.com/vi/" + song.videoId + "/maxresdefault.jpg"
+function getLatestYTMusicThumbnail(history) {
+    return "https://img.youtube.com/vi/" + history.contents_memo.get("MusicResponsiveListItem")[0].id + "/maxresdefault.jpg"
 }
 //End of YTMusic API functions
 
