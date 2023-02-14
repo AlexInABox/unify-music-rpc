@@ -35,8 +35,10 @@ async function runScript() {
 
     // 'update-credentials' is fired when the access token expires, if you do not save the updated credentials any subsequent request will fail 
     youtube.session.on('update-credentials', ({ credentials }) => {
+        youtube.session.oauth.cacheCredentials();
         console.log('Credentials updated/refreshed:', credentials);
     });
+
 
     await youtube.session.signIn();
 
@@ -75,21 +77,26 @@ async function runScript() {
         console.log("A new song was played and saved")
     }
 
+    try {
+        var lastVideo = await getLatestYTVideo();
+        console.log(lastVideo)
 
-    var lastVideo = await getLatestYTVideo();
-    console.log(lastVideo)
+        if (lastVideo.videoURL == misc.lastYTStreamURL) {
+            console.log("No new video played")
+        }
+        else {
+            misc.lastYTStreamName = lastVideo.videoName
+            misc.lastYTStreamURL = lastVideo.videoURL
+            misc.lastYTStreamThumbnailURL = lastVideo.videoThumbnailURL
+            misc.lastYTStreamChannelName = lastVideo.videoChannel
+            patchMisc()
+            console.log("A new video was played and saved")
+        }
+    } catch (error) {
+        console.log("Something went wrong trying to fetch the latest YouTube Video. You prb havent watched any video today!")
+        console.log(error)
+    }
 
-    if (lastVideo.videoURL == misc.lastYTStreamURL) {
-        console.log("No new video played")
-    }
-    else {
-        misc.lastYTStreamName = lastVideo.videoName
-        misc.lastYTStreamURL = lastVideo.videoURL
-        misc.lastYTStreamThumbnailURL = lastVideo.videoThumbnailURL
-        misc.lastYTStreamChannelName = lastVideo.videoChannel
-        patchMisc()
-        console.log("A new video was played and saved")
-    }
 
     console.log("Waiting for next check")
 }
@@ -148,6 +155,8 @@ async function getLatestYTVideo() {
     var videoURL;
     var videoThumbnailURL;
     var videoChannel;
+
+    //console.log(ythistory.sections[0].contents[1])
 
 
     return new Promise((res) => {
