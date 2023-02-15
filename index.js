@@ -112,15 +112,25 @@ function getLatestYTMusicName(history) {
 
 function getLatestYTMusicArtist(history) {
     var artists;
-    var length = history.contents_memo.get("MusicResponsiveListItem")[0].artists.length
-    for (let i = 0; i < length; i++) {
-        if (i == 0) {
-            artists = history.contents_memo.get("MusicResponsiveListItem")[0].artists[i].name
+    //check if there are multiple artists by checking if the object artists exists
+    //if it does not exist, the object is called authors
+
+    //here the function .isArray() is used to check if the object is an array.
+    //the function also returns false if the object does not exist wich is perfect for this case
+    if (Array.isArray(history.contents_memo.get("MusicResponsiveListItem")[0].artists)) {
+        var length = history.contents_memo.get("MusicResponsiveListItem")[0].artists.length
+        for (let i = 0; i < length; i++) {
+            if (i == 0) {
+                artists = history.contents_memo.get("MusicResponsiveListItem")[0].artists[i].name
+            }
+            else {
+                artists = artists + " & " + history.contents_memo.get("MusicResponsiveListItem")[0].artists[i].name
+            }
         }
-        else {
-            artists = artists + " & " + history.contents_memo.get("MusicResponsiveListItem")[0].artists[i].name
-        }
+    } else {
+        artists = history.contents_memo.get("MusicResponsiveListItem")[0].authors.name
     }
+
     return artists;
 }
 

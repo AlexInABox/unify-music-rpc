@@ -8,21 +8,6 @@
     <link rel="icon" type="image/x-icon" href="./favicon.png">
     <title>Unify your music</title>
     <style>
-        textarea {
-            mix-blend-mode: difference;
-            background-color: rgb(55, 59, 69);
-            color: white;
-            margin: 15px;
-            margin-bottom: 5px;
-            padding: 7px;
-            resize: none;
-            border-radius: 5px;
-            font-family: 'Roboto', sans-serif;
-            font-size: 115%;
-            text-transform: uppercase;
-        }
-    </style>
-    <style>
         div.card {
 
             width: 80%;
@@ -163,7 +148,9 @@
                 console.log("30 seconds passed, restarting script");
 
             }
+
             async function getMisc() {
+                console.log("starting misc");
                 return new Promise((obj) => {
                     fetch('./misc.json')
                         .then(res => res.json())
@@ -174,6 +161,7 @@
             }
 
             function patchContent() {
+                console.log("patching content");
                 document.getElementById("songName").innerHTML = misc.lastStreamName;
                 document.getElementById("artistName").innerHTML = misc.lastStreamArtist;
                 document.getElementById("thumbnail").src = "https://alexinabox.de:6968/" + misc.lastStreamThumbnailURL;
