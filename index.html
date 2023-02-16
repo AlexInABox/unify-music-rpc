@@ -56,11 +56,6 @@
         <script src="blurhash_pure_js_port.min.js"></script>
 
 
-
-
-
-
-
         <h1 style="mix-blend-mode: difference; margin: 20px; margin-bottom: 50px; font-size: 7vw;">This is <a
                 href="https://alexinabox.de/"
                 style="text-decoration: none; mix-blend-mode: difference; color: #FFFFFF;">my</a> last
@@ -84,9 +79,6 @@
             </div>
         </div>
         <script>
-
-
-
             const img = document.getElementById("thumbnail");
             img.crossOrigin = "Anonymous";
             //changing the crossOrigin to "Anonymous" will not work because the image is not on the same server and therefore the CORS policy will not allow it
@@ -138,7 +130,9 @@
 
         <script type="text/javascript">
             var misc;
-            setInterval(main(), 30000);
+            main(); //initial call
+            setInterval(function () { main() }, 30000); //call every 30 seconds
+
 
             async function main() {
                 misc = await getMisc();
