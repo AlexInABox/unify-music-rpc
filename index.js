@@ -6,7 +6,6 @@ const { Innertube, UniversalCache } = require('youtubei.js');
 
 //import utilities
 const fs = require('fs')
-const config = require('./config.json')
 
 
 //import misc.json
