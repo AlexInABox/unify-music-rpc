@@ -1,6 +1,4 @@
 //Import nessecary api modules
-const YoutubeMusicApi = require('youtube-music-api')
-const ytm = new YoutubeMusicApi()
 
 const { Innertube, UniversalCache } = require('youtubei.js');
 
@@ -11,9 +9,6 @@ const fs = require('fs')
 //import misc.json
 var misc = require('./misc.json')
 
-//Get your cookie from your browser
-
-var cookie = config.cookie
 //Print out the last song from you history
 
 var youtube;
