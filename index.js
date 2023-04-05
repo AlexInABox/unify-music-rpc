@@ -7,11 +7,39 @@ const fs = require('fs')
 
 
 //import misc.json
-var misc = require('./misc.json')
-
-//Print out the last song from you history
+var misc = require('./misc.json');
+const { getSystemErrorMap } = require('util');
 
 var youtube;
+
+//list of all possible thumnail urls:
+/*
+Width | Height | URL
+------|--------|----
+640   | 480    | https://i.ytimg.com/vi/<VIDEO ID>/sd1.jpg
+640   | 480    | https://i.ytimg.com/vi/<VIDEO ID>/sd2.jpg
+640   | 480    | https://i.ytimg.com/vi/<VIDEO ID>/sd3.jpg
+640   | 480    | https://i.ytimg.com/vi/<VIDEO ID>/sddefault.jpg
+1280  | 720    | https://i.ytimg.com/vi/<VIDEO ID>/hq720.jpg
+1920  | 1080   | https://i.ytimg.com/vi/<VIDEO ID>/maxresdefault.jpg
+
+Width | Height | URL
+------|--------|----
+120   | 90     | https://i.ytimg.com/vi/<VIDEO ID>/1.jpg
+120   | 90     | https://i.ytimg.com/vi/<VIDEO ID>/2.jpg
+120   | 90     | https://i.ytimg.com/vi/<VIDEO ID>/3.jpg
+120   | 90     | https://i.ytimg.com/vi/<VIDEO ID>/default.jpg
+320   | 180    | https://i.ytimg.com/vi/<VIDEO ID>/mq1.jpg
+320   | 180    | https://i.ytimg.com/vi/<VIDEO ID>/mq2.jpg
+320   | 180    | https://i.ytimg.com/vi/<VIDEO ID>/mq3.jpg
+320   | 180    | https://i.ytimg.com/vi/<VIDEO ID>/mqdefault.jpg
+480   | 360    | https://i.ytimg.com/vi/<VIDEO ID>/0.jpg
+480   | 360    | https://i.ytimg.com/vi/<VIDEO ID>/hq1.jpg
+480   | 360    | https://i.ytimg.com/vi/<VIDEO ID>/hq2.jpg
+480   | 360    | https://i.ytimg.com/vi/<VIDEO ID>/hq3.jpg
+480   | 360    | https://i.ytimg.com/vi/<VIDEO ID>/hqdefault.jpg
+
+*/
 
 async function runScript() {
     youtube = await Innertube.create({
@@ -55,7 +83,7 @@ async function runScript() {
             misc.lastStreamName = lastStreamName
             misc.lastStreamArtist = lastStreamArtist
             misc.lastStreamUrl = getLatestYTMusicURL(lastSong)
-            misc.lastStreamThumbnailURL = getLatestYTMusicThumbnail(lastSong)
+            misc.lastStreamThumbnailURL = await getLatestYTMusicThumbnail(lastSong)
             misc.lastStreamTime = Date.now()
             patchMisc()
             console.log("A new song was played and saved")
@@ -132,8 +160,60 @@ function getLatestYTMusicURL(history) {
     return "https://music.youtube.com/watch?v=" + history.contents_memo.get("MusicResponsiveListItem")[0].id
 }
 
-function getLatestYTMusicThumbnail(history) {
-    return "https://img.youtube.com/vi/" + history.contents_memo.get("MusicResponsiveListItem")[0].id + "/maxresdefault.jpg"
+//go through all possible thumbnail urls (sorted by quality descending) and return the first one that is not the default thumbnail
+async function getLatestYTMusicThumbnail(history) {
+    return new Promise((async (res) => {
+        const videoId = history.contents_memo.get("MusicResponsiveListItem")[0].id
+        const thumbnailURLs = [
+            "https://i.ytimg.com/vi/" + videoId + "/maxresdefault.jpg",
+            "https://i.ytimg.com/vi/" + videoId + "/hq720.jpg",
+            "https://i.ytimg.com/vi/" + videoId + "/sddefault.jpg",
+            "https://i.ytimg.com/vi/" + videoId + "/sd1.jpg",
+            "https://i.ytimg.com/vi/" + videoId + "/sd2.jpg",
+            "https://i.ytimg.com/vi/" + videoId + "/sd3.jpg",
+            "https://i.ytimg.com/vi/" + videoId + "/hqdefault.jpg",
+            "https://i.ytimg.com/vi/" + videoId + "/hq1.jpg",
+            "https://i.ytimg.com/vi/" + videoId + "/hq2.jpg",
+            "https://i.ytimg.com/vi/" + videoId + "/hq3.jpg",
+            "https://i.ytimg.com/vi/" + videoId + "/mqdefault.jpg",
+            "https://i.ytimg.com/vi/" + videoId + "/mq1.jpg",
+            "https://i.ytimg.com/vi/" + videoId + "/mq2.jpg",
+            "https://i.ytimg.com/vi/" + videoId + "/mq3.jpg",
+            "https://i.ytimg.com/vi/" + videoId + "/default.jpg",
+            "https://i.ytimg.com/vi/" + videoId + "/1.jpg",
+            "https://i.ytimg.com/vi/" + videoId + "/2.jpg",
+            "https://i.ytimg.com/vi/" + videoId + "/3.jpg",
+            "https://i.ytimg.com/vi/" + videoId + "/0.jpg"
+        ]
+        for (let i = 0; i < thumbnailURLs.length; i++) {
+            try {
+                if (await isNotDefault(thumbnailURLs[i])) {
+                    console.log("Found thumbnail: " + i)
+                    return res(thumbnailURLs[i]);
+                }
+            } catch (error) {
+                return res("https://img.youtube.com/vi/0/maxresdefault.jpg");
+            }
+        }
+        return res("https://img.youtube.com/vi/0/maxresdefault.jpg");
+    }
+    ))
+}
+
+function isNotDefault(url) { //get the uint8Array buffern and compare it to the default buffer string ("lorem ipsum")
+    return new Promise(async (res) => {
+        const defaultResponse = await fetch("https://i.ytimg.com/vi/vi/0/maxresdefault.jpg"); //TODO: only fetch once (or once per iteration)
+        const defaultBuffer = await defaultResponse.arrayBuffer();
+        const defaultUint8Array = new Uint8Array(defaultBuffer);
+
+        const response = await fetch(url);
+        const buffer = await response.arrayBuffer();
+        const uint8Array = new Uint8Array(buffer);
+        console.log(uint8Array.toString() != defaultUint8Array.toString())
+        console.log(uint8Array.toString())
+        console.log(defaultUint8Array.toString())
+        res(uint8Array.toString() != defaultUint8Array.toString())
+    })
 }
 //End of YTMusic API functions
 
