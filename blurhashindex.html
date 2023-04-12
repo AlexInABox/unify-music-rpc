@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="./favicon.png">
+    <title>Unify your music</title>
+    <style>
+        textarea {
+            mix-blend-mode: difference;
+            background-color: rgb(55, 59, 69);
+            color: white;
+            margin: 15px;
+            margin-bottom: 5px;
+            padding: 7px;
+            resize: none;
+            border-radius: 5px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 115%;
+            text-transform: uppercase;
+        }
+    </style>
+    <style>
+        div.card {
+
+            width: 80%;
+            height: 80%;
+            max-width: 400px;
+            max-height: 400px;
+            margin: auto;
+            scale: auto;
+            overflow: visible;
+            aspect-ratio: 1;
+            margin-top: 0px;
+            border: 5px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+        }
+
+        div.container {
+            text-align: center;
+            height: fit-content;
+            max-height: 30%;
+            font-size: auto;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body style="text-align: center; font-family: 'Roboto', sans-serif; color: white;">
+    <div style="height: 100%;">
+        <script src="blurhash_pure_js_port.min.js"></script>
+
+
+
+
+
+
+
+        <h1 style="mix-blend-mode: difference; margin: 20px; margin-bottom: 50px; font-size: 7vw;">This is <a
+                href="https://alexinabox.de/"
+                style="text-decoration: none; mix-blend-mode: difference; color: #FFFFFF;">my</a> last
+            streamed song:</h1>
+
+        <div class="card">
+            <img id="thumbnail"
+                style="width: 100%; height: 100%; max-width: 400px; max-height: 400px; aspect-ratio: 1; object-fit: cover; border:5px; border-radius: 15px;">
+            <div class="container">
+                <h1 style="mix-blend-mode: difference; margin: 10px; font-size: 150%;" id="songName"></h1>
+                <h1 style="mix-blend-mode: difference; margin: 20px; font-size: 120%;" id="artistName"></h1>
+            </div>
+        </div>
+        <script>
+
+
+
+            const img = document.getElementById("thumbnail");
+            img.crossOrigin = "Anonymous";
+            //changing the crossOrigin to "Anonymous" will not work because the image is not on the same server and therefore the CORS policy will not allow it
+            //this can be fixed by using a proxy server
+            //this is the link to the proxy server: https://cors-anywhere.herokuapp.com/
+            //this is the link to the image: https://i.scdn.co/image/ab67616d0000b273c0e2b2b2b2b2b2b2b2b2b2b2
+            //this is the link to the image with the proxy server: https://cors-anywhere.herokuapp.com/https://i.scdn.co/image/ab67616d0000b273c0e2b2b2b2b2b2b2b2b2b2b2
+
+
+            img.onload = () => {
+
+                const imgData = blurhash.getImageData(img);
+
+                blurhash
+                    .encodePromise(imgData, img.width, img.height, 3, 3)
+                    .then(hash => {
+                        return blurhash.decodePromise(
+                            hash,
+                            img.width,
+                            img.height
+                        );
+                    })
+                    .then(blurhashImgData => {
+                        // as canvas element
+                        const canvas = blurhash.drawImageDataOnNewCanvas(
+                            blurhashImgData,
+                            img.width,
+                            img.height
+                        );
+
+
+                        //draw this canvas on the background of the whole page
+                        document.body.style.backgroundImage = `url(${canvas.toDataURL()})`;
+                        document.body.style.backgroundRepeat = "no-repeat";
+                        document.body.style.backgroundSize = "100% 100%";
+                        document.body.style.backgroundAttachment = "fixed";
+
+
+
+
+
+                    })
+            };
+        //make the image source the url of the thumbnail
+
+        </script>
+
+
+
+        <script type="text/javascript">
+            var misc;
+            main();
+            setInterval(function () { main() }, 30000);
+
+            async function main() {
+
+                console.log("Running script...");
+                misc = await getMisc();
+                patchContent();
+                console.log("Content successfully patched!");
+
+                console.log("Waiting for 30 seconds...");
+            }
+            async function getMisc() {
+                return new Promise((obj) => {
+                    fetch('./misc.json')
+                        .then(res => res.json())
+                        .then(data => {
+                            return obj(data)
+                        })
+                })
+            }
+
+            function patchContent() {
+                document.getElementById("songName").innerHTML = misc.lastStreamName;
+                document.getElementById("artistName").innerHTML = misc.lastStreamArtist;
+                document.getElementById("thumbnail").src = "https://alexinabox.de:6968/" + misc.lastStreamThumbnailURL;
+            }
+        </script>
+    </div>
+</body>
+
+
+
+</html>
