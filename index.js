@@ -4,10 +4,12 @@ const { Innertube, UniversalCache } = require('youtubei.js');
 
 //import utilities
 const fs = require('fs')
+var request = require('request');
 
 
 //import misc.json
 var misc = require('./misc.json');
+const config = require('./config.json');
 const { getSystemErrorMap } = require('util');
 
 var youtube;
@@ -48,11 +50,49 @@ async function runScript() {
 
     youtube.session.on('auth-pending', (data) => {
         console.log(`Go to ${data.verification_url} in your browser and enter code ${data.user_code} to authenticate.`);
+
+        //send the message to the discord channel if a webhook is set
+        if (config.discordWebhook != "") {
+            var options = {
+                'method': 'POST',
+                'url': config.discordWebhook,
+                'headers': {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'content': `Go to ${data.verification_url} in your browser and enter code ${data.user_code} to (re)- authenticate.`
+                })
+
+            };
+            request(options, function (error, response) {
+                if (error) throw new Error(error);
+                console.log(response.body);
+            });
+        }
     });
 
     // 'auth' is fired once the authentication is complete
     youtube.session.on('auth', ({ credentials }) => {
         console.log('Sign in successful:', credentials);
+
+        //send the message to the discord channel if a webhook is set
+        if (config.discordWebhook != "") {
+            var options = {
+                'method': 'POST',
+                'url': config.discordWebhook,
+                'headers': {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'content': `Sign in successful!`
+                })
+
+            };
+            request(options, function (error, response) {
+                if (error) throw new Error(error);
+                console.log(response.body);
+            });
+        }
     });
 
     // 'update-credentials' is fired when the access token expires, if you do not save the updated credentials any subsequent request will fail 
@@ -200,7 +240,7 @@ async function getLatestYTMusicThumbnail(history) {
     ))
 }
 
-function isNotDefault(url) { //get the uint8Array buffern and compare it to the default buffer string ("lorem ipsum")
+function isNotDefault(url) { //get the uint8Array buffer and compare it to the default buffer string ("lorem ipsum")
     return new Promise(async (res) => {
         const defaultResponse = await fetch("https://i.ytimg.com/vi/vi/0/maxresdefault.jpg"); //TODO: only fetch once (or once per iteration)
         const defaultBuffer = await defaultResponse.arrayBuffer();
@@ -209,9 +249,6 @@ function isNotDefault(url) { //get the uint8Array buffern and compare it to the 
         const response = await fetch(url);
         const buffer = await response.arrayBuffer();
         const uint8Array = new Uint8Array(buffer);
-        console.log(uint8Array.toString() != defaultUint8Array.toString())
-        console.log(uint8Array.toString())
-        console.log(defaultUint8Array.toString())
         res(uint8Array.toString() != defaultUint8Array.toString())
     })
 }
