@@ -1,0 +1,4 @@
+Order Allow,Deny
+<FilesMatch "^index\.html$">
+    Allow from all
+</FilesMatch
