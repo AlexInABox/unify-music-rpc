@@ -1,4 +1,5 @@
-Order Allow,Deny
-<FilesMatch "^index\.html$">
-    Allow from all
-</FilesMatch
+# deny access to a specific file
+<Files "config.json">
+    Order allow,deny
+    Deny from all
+</Files>
